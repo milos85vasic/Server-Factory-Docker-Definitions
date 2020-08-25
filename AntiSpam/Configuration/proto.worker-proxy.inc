@@ -1,7 +1,7 @@
-bind_socket = "0.0.0.0:{{SERVICE.ANTI_SPAM.PORTS.WORKER}}";
+bind_socket = "*:{{SERVICE.ANTI_SPAM.PORTS.PROXY}}";
 milter = yes;
 timeout = 120s;
-upstream "local" {
+upstream "scan" {
   default = yes;
   self_scan = yes;
 }
