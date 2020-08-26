@@ -1,40 +1,35 @@
-require "spamtestplus";
-require "virustest";
-require "fileinto";
-require "relational";
-require "comparator-i;ascii-numeric";
+require ["fileinto","mailbox"];
 
-/* If the spamtest fails for some reason, e.g. spam header is missing, file
- * file it in a special folder.
- */
-if spamtest :value "eq" :comparator "i;ascii-numeric" "0" {
-  fileinto "INBOX/Unclassified";
+if header :contains ["X-Virus-Status"] "Infected" {
 
-/* If the spamtest score (in the range 1-10) is larger than or equal to 3,
- * file it into the spam folder:
- */
-} elsif spamtest :value "ge" :comparator "i;ascii-numeric" "3" {
-  fileinto "INBOX/Spam";
-
-/* For more fine-grained score evaluation, the :percent tag can be used. The
- * following rule discards all messages with a percent score
- * (relative to maximum) of more than 85 %:
- */
-} elsif spamtest :value "gt" :comparator "i;ascii-numeric" :percent "85" {
-  discard;
+    fileinto "INBOX/Quarantine";
+    stop;
 }
 
-/* Not scanned ? */
-if virustest :value "eq" :comparator "i;ascii-numeric" "0" {
-  fileinto "INBOX/Unscanned";
+if anyof(
+    header :contains ["X-Spam-Flag"] "YES",
+    header :contains ["X-Spam"] "Yes",
+    header :contains ["Subject"] "*** SPAM ***"
+    )
+{
 
-/* Infected with high probability (value range in 1-5) */
-} if virustest :value "eq" :comparator "i;ascii-numeric" "4" {
-  /* Quarantine it in special folder (still somewhat dangerous) */
-  fileinto "INBOX/Quarantine";
+    fileinto :create "INBOX/Spam";
+    stop;
+}
 
-/* Definitely infected */
-} elsif virustest :value "eq" :comparator "i;ascii-numeric" "5" {
-  /* Just get rid of it */
-  discard;
+if header :contains ["X-Spamd-Result"] "False" {
+
+} else {
+
+    fileinto "INBOX/Unclassified";
+    stop;
+}
+
+if header :contains ["X-Virus-Scanned"] "amavisd-new" {
+
+    stop;
+} else {
+
+    fileinto "INBOX/Unscanned";
+    stop;
 }
