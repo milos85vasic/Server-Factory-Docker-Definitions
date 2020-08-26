@@ -19,6 +19,7 @@ if anyof(
 
 if header :contains ["X-Spamd-Result"] "False" {
 
+    fileinto "INBOX";
 } else {
 
     fileinto "INBOX/Unclassified";
@@ -27,6 +28,7 @@ if header :contains ["X-Spamd-Result"] "False" {
 
 if header :contains ["X-Virus-Scanned"] "amavisd-new" {
 
+    fileinto "INBOX";
     stop;
 } else {
 
