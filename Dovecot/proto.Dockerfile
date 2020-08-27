@@ -10,6 +10,8 @@ ADD Configuration /etc/dovecot
 ADD Utils /usr/local/bin
 ADD Scripts/start.sh /start.sh
 ADD Scripts/logrotate.sh /logrotate.sh
+ADD Scripts/learn_ham.sh /usr/bin/learn_ham.sh
+ADD Scripts/learn_spam.sh /usr/bin/learn_spam.sh
 
 RUN mkdir /etc/dovecot/sieve
 
