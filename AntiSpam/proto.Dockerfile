@@ -6,7 +6,7 @@ RUN dnf update -y && \
     dnf install -y --nogpgcheck https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm && \
     dnf install -y --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-8.noarch.rpm https://download1.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-8.noarch.rpm && \
     dnf install -y python3 libpcap && \
-    dnf install -y git cmake make gcc-c++ boost ragel libnet curl telnet net-tools iputils && \
+    dnf install -y git cmake make gcc-c++ boost ragel libnet curl telnet net-tools iputils wget && \
     dnf groupinstall -y "Development Tools" && \
     cd /opt; git clone http://luajit.org/git/luajit-2.0.git; cd luajit-2.0; make && make install; cd / && \
     rpm -Uvh http://repo.openfusion.net/centos7-x86_64/openfusion-release-0.7-1.of.el7.noarch.rpm && \
@@ -30,6 +30,11 @@ RUN cp /etc/rspamd/local.d/dkim_signing.conf /etc/rspamd/local.d/arc.conf
 RUN mkdir /var/run/rspamd
 RUN printf "password = \"$(rspamadm pw --encrypt -p {{SERVICE.ANTI_SPAM.WEBUI.PASSWORD}})\";\n" >> /etc/rspamd/local.d/worker-controller.inc
 RUN printf "enable_password = \"$(rspamadm pw --encrypt -p {{SERVICE.ANTI_SPAM.WEBUI.PASSWORD}})\";\n" >> /etc/rspamd/local.d/worker-controller.inc
+
+RUN wget -P /var/lib/rspamd https://rspamd.com/rspamd_statistics/bayes.ham.sqlite
+RUN wget -P /var/lib/rspamd https://rspamd.com/rspamd_statistics/bayes.spam.sqlite
+RUN chown _rspamd._rspamd /var/lib/rspamd/*sqlite
+RUN rspamadm statconvert --spam-db /var/lib/rspamd/bayes.spam.sqlite --symbol-spam BAYES_SPAM --ham-db /var/lib/rspamd/bayes.ham.sqlite --symbol-ham BAYES_HAM -h {{SERVICE.MEMORY_DATABASE.NAME}}
 
 EXPOSE {{SERVICE.ANTI_SPAM.PORTS.PROXY}}
 EXPOSE {{SERVICE.ANTI_SPAM.PORTS.WORKER}}
