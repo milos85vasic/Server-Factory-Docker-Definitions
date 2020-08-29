@@ -10,20 +10,14 @@ ADD Configuration /etc/dovecot
 ADD Utils /usr/local/bin
 ADD Scripts/start.sh /start.sh
 ADD Scripts/logrotate.sh /logrotate.sh
-ADD Scripts/learn_ham.sh /usr/bin/learn_ham.sh
-ADD Scripts/learn_spam.sh /usr/bin/learn_spam.sh
 
 RUN mkdir /etc/dovecot/sieve
 
 ADD Sieve/.dovecot.sieve /etc/dovecot/sieve/.dovecot.sieve
-ADD Sieve/report-ham.sieve /etc/dovecot/sieve/report-ham.sieve
-ADD Sieve/report-spam.sieve /etc/dovecot/sieve/report-spam.sieve
-ADD Sieve/spam-global.sieve /etc/dovecot/sieve/spam-global.sieve
+ADD Sieve/spamglobal.sieve /etc/dovecot/sieve/spamglobal.sieve
 
 RUN sievec /etc/dovecot/sieve/.dovecot.sieve
-RUN sievec /etc/dovecot/sieve/report-ham.sieve
-RUN sievec /etc/dovecot/sieve/report-spam.sieve
-RUN sievec /etc/dovecot/sieve/spam-global.sieve
+RUN sievec /etc/dovecot/sieve/spamglobal.sieve
 
 RUN groupadd -g 5000 vmail && useradd -g vmail -u 5000 vmail -d /home/vmail -m
 RUN chgrp vmail /etc/dovecot/dovecot.conf && chmod g+r /etc/dovecot/dovecot.conf
