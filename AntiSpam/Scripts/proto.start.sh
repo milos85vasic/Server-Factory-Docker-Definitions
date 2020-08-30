@@ -45,7 +45,7 @@ then
       fi
   done
 
-  rspamc stat -P {{SERVICE.ANTI_SPAM.WEBUI.PASSWORD}}) >> ${logFile}
+  rspamc stat -P {{SERVICE.ANTI_SPAM.WEBUI.PASSWORD}} >> ${logFile}
   tail -F ${logFile}
 else
 
