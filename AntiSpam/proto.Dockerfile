@@ -16,6 +16,7 @@ RUN dnf update -y && \
     dnf install -y rspamd
 
 ADD Scripts/start.sh /start.sh
+ADD Scripts/getip.sh /getip.sh
 ADD Scripts/logrotate.sh /logrotate.sh
 ADD Configuration/worker-proxy.inc /etc/rspamd/local.d/worker-proxy.inc
 ADD Configuration/worker-normal.inc /etc/rspamd/local.d/worker-normal.inc
@@ -36,7 +37,8 @@ RUN cp /etc/rspamd/local.d/dkim_signing.conf /etc/rspamd/local.d/arc.conf && \
     wget -P /var/lib/rspamd https://rspamd.com/rspamd_statistics/bayes.spam.sqlite && \
     chown _rspamd._rspamd /var/lib/rspamd/*sqlite && \
     rspamadm statconvert --spam-db /var/lib/rspamd/bayes.spam.sqlite --symbol-spam BAYES_SPAM \
-    --ham-db /var/lib/rspamd/bayes.ham.sqlite --symbol-ham BAYES_HAM -h {{SERVICE.MEMORY_DATABASE.NAME}}
+    --ham-db /var/lib/rspamd/bayes.ham.sqlite --symbol-ham BAYES_HAM -h \
+    `/getip.sh {{SERVICE.MEMORY_DATABASE.NAME}}`
 
 EXPOSE {{SERVICE.ANTI_SPAM.PORTS.PROXY}}
 EXPOSE {{SERVICE.ANTI_SPAM.PORTS.WORKER}}
