@@ -34,7 +34,9 @@ RUN printf "enable_password = \"$(rspamadm pw --encrypt -p {{SERVICE.ANTI_SPAM.W
 RUN wget -P /var/lib/rspamd https://rspamd.com/rspamd_statistics/bayes.ham.sqlite
 RUN wget -P /var/lib/rspamd https://rspamd.com/rspamd_statistics/bayes.spam.sqlite
 RUN chown _rspamd._rspamd /var/lib/rspamd/*sqlite
-RUN rspamadm statconvert --spam-db /var/lib/rspamd/bayes.spam.sqlite --symbol-spam BAYES_SPAM --ham-db /var/lib/rspamd/bayes.ham.sqlite --symbol-ham BAYES_HAM -h {{SERVICE.MEMORY_DATABASE.NAME}}
+
+RUN rspamadm statconvert --spam-db /var/lib/rspamd/bayes.spam.sqlite --symbol-spam BAYES_SPAM \
+    --ham-db /var/lib/rspamd/bayes.ham.sqlite --symbol-ham BAYES_HAM -h {{SERVICE.MEMORY_DATABASE.NAME}}
 
 EXPOSE {{SERVICE.ANTI_SPAM.PORTS.PROXY}}
 EXPOSE {{SERVICE.ANTI_SPAM.PORTS.WORKER}}
