@@ -38,7 +38,7 @@ RUN cp /etc/rspamd/local.d/dkim_signing.conf /etc/rspamd/local.d/arc.conf && \
     chown _rspamd._rspamd /var/lib/rspamd/*sqlite && \
     rspamadm statconvert --spam-db /var/lib/rspamd/bayes.spam.sqlite --symbol-spam BAYES_SPAM \
     --ham-db /var/lib/rspamd/bayes.ham.sqlite --symbol-ham BAYES_HAM -h \
-    `/getip.sh {{SERVICE.MEMORY_DATABASE.NAME}}`
+    `/getip.sh {{SERVICE.MEMORY_DATABASE.NAME}}`:{{SERVICE.MEMORY_DATABASE.PORTS.PORT}}
 
 EXPOSE {{SERVICE.ANTI_SPAM.PORTS.PROXY}}
 EXPOSE {{SERVICE.ANTI_SPAM.PORTS.WORKER}}
