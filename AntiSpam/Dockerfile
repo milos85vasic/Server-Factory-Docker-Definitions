@@ -1,5 +1,19 @@
 FROM centos:8
 
+ARG PROXY_PORT
+ARG WORKER_PORT
+ARG WEBUI_PORT
+ARG WEBUI_PASS
+ARG MEM_DB
+ARG MEM_DB_PORT
+
+ENV PROXY_PORT "$PROXY_PORT"
+ENV WORKER_PORT "$WORKER_PORT"
+ENV WEBUI_PORT "$WEBUI_PORT"
+ENV WEBUI_PASS "$WEBUI_PASS"
+ENV MEM_DB "$MEM_DB"
+ENV MEM_DB_PORT "$MEM_DB_PORT"
+
 RUN dnf update -y && \
     dnf install -y findutils && \
     dnf clean all && \
@@ -29,29 +43,19 @@ ADD Configuration/redis.conf /etc/rspamd/local.d/redis.conf
 
 RUN cp /etc/rspamd/local.d/dkim_signing.conf /etc/rspamd/local.d/arc.conf && \
     mkdir /var/run/rspamd && \
-    printf "password = \"$(rspamadm pw --encrypt -p {{SERVICE.ANTI_SPAM.WEBUI.PASSWORD}})\";\n" >> \
+    printf "password = \"$(rspamadm pw --encrypt -p ${WEBUI_PASS})\";\n" >> \
     /etc/rspamd/local.d/worker-controller.inc && \
-    printf "enable_password = \"$(rspamadm pw --encrypt -p {{SERVICE.ANTI_SPAM.WEBUI.PASSWORD}})\";\n" >> \
+    printf "enable_password = \"$(rspamadm pw --encrypt -p ${WEBUI_PASS})\";\n" >> \
     /etc/rspamd/local.d/worker-controller.inc && \
     wget -P /var/lib/rspamd https://rspamd.com/rspamd_statistics/bayes.ham.sqlite && \
     wget -P /var/lib/rspamd https://rspamd.com/rspamd_statistics/bayes.spam.sqlite && \
     chown _rspamd._rspamd /var/lib/rspamd/*sqlite && \
     rspamadm statconvert --spam-db /var/lib/rspamd/bayes.spam.sqlite --symbol-spam BAYES_SPAM \
     --ham-db /var/lib/rspamd/bayes.ham.sqlite --symbol-ham BAYES_HAM -h \
-    `/getip.sh {{SERVICE.MEMORY_DATABASE.NAME}}`:{{SERVICE.MEMORY_DATABASE.PORTS.PORT}}
+    `/getip.sh "${MEM_DB}"`:"${MEM_DB_PORT}"
 
-ARG PROXY_PORT
-ARG WORKER_PORT
-ARG WEBUI_PORT
-ARG WEBUI_PASS
-
-ENV PROXY_PORT "$PROXY_PORT"
-ENV WORKER_PORT "$WORKER_PORT"
-ENV WEBUI_PORT "$WEBUI_PORT"
-ENV WEBUI_PASS "$WEBUI_PASS"
-
-EXPOSE {{SERVICE.ANTI_SPAM.PORTS.PROXY}}
-EXPOSE {{SERVICE.ANTI_SPAM.PORTS.WORKER}}
-EXPOSE {{SERVICE.ANTI_SPAM.PORTS.WEBUI}}
+EXPOSE $PROXY_PORT
+EXPOSE $WORKER_PORT
+EXPOSE $WEBUI_PORT
 
 CMD sh start.sh "${PROXY_PORT}" "${WORKER_PORT}" "${WEBUI_PORT}" "${WEBUI_PASS}"

@@ -17,6 +17,6 @@ ADD Scripts/logrotate.sh /logrotate.sh
 ARG MAIN_PORT
 ENV MAIN_PORT "$MAIN_PORT"
 
-EXPOSE {{SERVICE.ANTI_VIRUS.PORTS.PORT}}
+EXPOSE $MAINPORT
 
 CMD sh start.sh "${MAIN_PORT}"
