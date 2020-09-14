@@ -1,15 +1,19 @@
 #!/bin/sh
 
+dbName=$3
+avName=$4
+dbPort=$1
+avPort=$2
+avPortMailSend=$6
+serviceReceive=$5
 dovecotSaslPort=12345
 dovecotLmtpPort=12346
-dbPort={{SERVICE.DATABASE.PORTS.PORT}}
-antivirusPort={{SERVICE.ANTI_VIRUS.PORTS.PORT}}
 
 postfixLog=/var/log/postfix.start.log
 echo "Starting Postfix" > ${postfixLog}
 
 echo "Checking database port: $dbPort" >> ${postfixLog}
-if echo "^C" | telnet {{SERVICE.DATABASE.NAME}} ${dbPort} | grep "Connected"
+if echo "^C" | telnet "${dbName}" "${dbPort}" | grep "Connected"
 then
     echo "Database process is bound to port: $dbPort" >> ${postfixLog}
 else
@@ -17,17 +21,17 @@ else
    exit 1
 fi
 
-echo "Checking AntiVirus scanner service port: $antivirusPort" >> ${postfixLog}
-if echo "^C" | telnet {{SERVICE.ANTI_VIRUS.NAME}} ${antivirusPort} | grep "Connected"
+echo "Checking AntiVirus scanner service port: $avPort" >> ${postfixLog}
+if echo "^C" | telnet "${avName}" "${avPort}" | grep "Connected"
 then
-    echo "AntiVirus scanner service is bound to port: $antivirusPort" >> ${postfixLog}
+    echo "AntiVirus scanner service is bound to port: $avPort" >> ${postfixLog}
 else
-   echo "No AntiVirus scanner service bound to port: $antivirusPort" >> ${postfixLog}
+   echo "No AntiVirus scanner service bound to port: $avPort" >> ${postfixLog}
    exit 1
 fi
 
 echo "Checking Dovecot SASL port: $dovecotSaslPort" >> ${postfixLog}
-if echo "^C" | telnet {{SERVICE.MAIL_RECEIVE.NAME}} ${dovecotSaslPort} | grep "Connected"
+if echo "^C" | telnet "${serviceReceive}" ${dovecotSaslPort} | grep "Connected"
 then
     echo "Dovecot process is bound to port: $dovecotSaslPort" >> ${postfixLog}
 else
@@ -36,7 +40,7 @@ else
 fi
 
 echo "Checking Dovecot LMTP port: $dovecotLmtpPort" >> ${postfixLog}
-if echo "^C" | telnet {{SERVICE.MAIL_RECEIVE.NAME}} ${dovecotLmtpPort} | grep "Connected"
+if echo "^C" | telnet "${serviceReceive}" ${dovecotLmtpPort} | grep "Connected"
 then
     echo "Dovecot process is bound to port: $dovecotLmtpPort" >> ${postfixLog}
 else
@@ -51,8 +55,10 @@ postfix start >> ${postfixLog}
 if postfix status >> ${postfixLog}
 then
 
-    ports=(465 587 {{SERVICE.MAIL_SEND.PORTS.PORT_ANTI_VIRUS}})
-    for port in ${ports[@]}; do
+    export IFS=";"
+    ports="465;587;${avPortMailSend}"
+    for port in $ports; do
+
         if echo "^C" | telnet 127.0.0.1 "${port}" | grep "Connected"
         then
             echo "Postfix is listening on port: $port" >> ${postfixLog}
