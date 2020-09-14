@@ -2,7 +2,12 @@ version: "3.7"
 
 services:
   {{SERVICE.MAIL_RECEIVE.NAME}}:
-    build: .
+    build:
+      context: .
+      args:
+        - DB={{SERVICE.DATABASE.NAME}}
+        - DB_PORT={{SERVICE.DATABASE.PORTS.PORT}}
+        - PORT_EXPOSED_IMAPS={{SERVICE.MAIL_RECEIVE.PORTS.PORT_EXPOSED_IMAPS}}
     container_name: {{SERVICE.MAIL_RECEIVE.NAME}}
     hostname: {{SERVICE.MAIL_RECEIVE.NAME}}.{{SERVER.DOMAIN}}
     restart: always

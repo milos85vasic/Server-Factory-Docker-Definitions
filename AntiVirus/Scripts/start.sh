@@ -22,8 +22,10 @@ chmod 600 ${amavisLog}
 if amavisd >> ${antivirusStackLog}
 then
 
-    ports=({{SERVICE.ANTI_VIRUS.PORTS.PORT}})
-    for port in ${ports[@]}; do
+    mainPort=$1
+    ports="${mainPort}"
+    for port in $ports; do
+
         if echo "^C" | telnet 127.0.0.1 "${port}" | grep "Connected"
         then
             echo "Amavis is listening on port: $port" >> ${antivirusStackLog}
