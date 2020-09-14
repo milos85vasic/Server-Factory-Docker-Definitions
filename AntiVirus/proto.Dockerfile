@@ -14,6 +14,9 @@ ADD Scripts/do_clam.sh /do_clam.sh
 ADD Scripts/start.sh /start.sh
 ADD Scripts/logrotate.sh /logrotate.sh
 
+ARG MAIN_PORT
+ENV MAIN_PORT "$MAIN_PORT"
+
 EXPOSE {{SERVICE.ANTI_VIRUS.PORTS.PORT}}
 
-CMD sh start.sh
+CMD sh start.sh "${MAIN_PORT}"
