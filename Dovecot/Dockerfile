@@ -1,5 +1,13 @@
 FROM fedora:32
 
+ARG DB
+ARG DB_PORT
+ARG PORT_EXPOSED_IMAPS
+
+ENV DB "$DB"
+ENV DB_PORT "$DB_PORT"
+ENV PORT_EXPOSED_IMAPS "$PORT_EXPOSED_IMAPS"
+
 RUN dnf update -y && \
     dnf install findutils -y && \
     dnf clean all && \
@@ -20,6 +28,6 @@ RUN sievec /etc/dovecot/sieve/.dovecot.sieve && \
     chgrp vmail /etc/dovecot/dovecot.conf && chmod g+r /etc/dovecot/dovecot.conf && \
     chgrp -R vmail /etc/dovecot/sieve && chmod -R 750 /etc/dovecot/sieve
 
-EXPOSE {{SERVICE.MAIL_RECEIVE.PORTS.PORT_EXPOSED_IMAPS}}
+EXPOSE $PORT_EXPOSED_IMAPS
 
-CMD sh start.sh
+CMD sh start.sh "${DB}" "${DB_PORT}"
