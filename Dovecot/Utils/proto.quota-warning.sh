@@ -3,8 +3,8 @@
 PERCENT=$1
 USER=$2
 
-cat <<EOF | /usr/libexec/dovecot/dovecot-lda -d "${USER}" -o plugin/quota=maildir
-    From: {{SERVER.POSTMASTER}}
-    Subject: Quota warning
-    Your mailbox is currently ${PERCENT}% full.
-EOF
+echo "From: {{SERVER.POSTMASTER}}
+Subject: Quota warning
+
+Your mailbox is currently $PERCENT% full.
+" | /usr/libexec/dovecot/dovecot-lda -d "${USER}" -o plugin/quota=maildir
