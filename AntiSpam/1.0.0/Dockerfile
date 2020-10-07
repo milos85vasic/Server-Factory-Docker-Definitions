@@ -32,14 +32,14 @@ RUN dnf update -y && \
 ADD Scripts/start.sh /start.sh
 ADD Scripts/getip.sh /getip.sh
 ADD Scripts/logrotate.sh /logrotate.sh
-ADD Configuration/worker-proxy.inc /etc/rspamd/local.d/worker-proxy.inc
-ADD Configuration/worker-normal.inc /etc/rspamd/local.d/worker-normal.inc
-ADD Configuration/classifier-bayes.conf /etc/rspamd/local.d/classifier-bayes.conf
+ADD Configuration /etc/rspamd/local.d/worker-proxy.inc
+ADD Configuration /etc/rspamd/local.d/worker-normal.inc
+ADD Configuration /etc/rspamd/local.d/classifier-bayes.conf
 ADD Configuration/milter_headers.conf /etc/rspamd/local.d/milter_headers.conf
-ADD Configuration/worker-controller.inc /etc/rspamd/local.d/worker-controller.inc
+ADD Configuration /etc/rspamd/local.d/worker-controller.inc
 ADD Configuration/logging.inc /etc/rspamd/local.d/logging.inc
 ADD Configuration/dkim_signing.conf /etc/rspamd/local.d/dkim_signing.conf
-ADD Configuration/redis.conf /etc/rspamd/local.d/redis.conf
+ADD Configuration /etc/rspamd/local.d/redis.conf
 
 RUN cp /etc/rspamd/local.d/dkim_signing.conf /etc/rspamd/local.d/arc.conf && \
     mkdir /var/run/rspamd && \

@@ -23,7 +23,7 @@ RUN dnf update -y && \
     alternatives --set mta /usr/sbin/sendmail.postfix && \
     groupadd -g 5000 vmail && useradd -g vmail -u 5000 vmail -d /home/vmail -m
 
-ADD Configuration/*.* /etc/postfix/
+ADD Configuration /etc/postfix/
 ADD Scripts/start.sh /start.sh
 ADD Scripts/logrotate.sh /logrotate.sh
 
