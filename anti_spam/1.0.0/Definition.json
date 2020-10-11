@@ -4,5 +4,8 @@
     "type": "docker",
     "version": "1.0.0",
     "name": "anti_spam"
-  }
+  },
+  "includes": [
+    "AntiSpam.json"
+  ]
 }
