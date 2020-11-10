@@ -31,7 +31,7 @@
           },
           {
             "type": "command",
-            "value": "ln -s {{DOCKER.DOCKER_HOME}}/Redis/database.redis.service /etc/systemd/system/database.redis.service"
+            "value": "ln {{DOCKER.DOCKER_HOME}}/Redis/database.redis.service /etc/systemd/system/database.redis.service"
           },
           {
             "type": "command",
